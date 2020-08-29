@@ -1,0 +1,4 @@
+/mnt/hgfs/ubuntu/vip/20200108-connection-pool/src/mysql-pool/build/CMakeFiles/rebuild_cache.dir
+/mnt/hgfs/ubuntu/vip/20200108-connection-pool/src/mysql-pool/build/CMakeFiles/edit_cache.dir
+/mnt/hgfs/ubuntu/vip/20200108-connection-pool/src/mysql-pool/build/CMakeFiles/test_DBPool.dir
+/mnt/hgfs/ubuntu/vip/20200108-connection-pool/src/mysql-pool/build/CMakeFiles/test_ThreadPool.dir
