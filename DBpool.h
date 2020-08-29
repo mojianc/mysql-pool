@@ -57,7 +57,7 @@ class CDBConn {
 public:
 	CDBConn(CDBPool* pDBPool);
 	virtual ~CDBConn();
-	int Init();
+	int Init(); 
 
 	// 创建表
 	bool ExecuteCreate(const char* sql_query);

@@ -17,22 +17,26 @@ struct threadpool *threadpool_init(int thread_num, int queue_max_num)
     struct threadpool *pool = NULL;
     do
     {
+        //创建线程池
         pool = (struct threadpool *)malloc(sizeof(struct threadpool));
         if (NULL == pool)
         {
             printf("failed to malloc threadpool!\n");
             break;
         }
+        //设置线程池的线程数，最大队列数
         pool->thread_num = thread_num;
         pool->queue_max_num = queue_max_num;
         pool->queue_cur_num = 0;
         pool->head = NULL;
         pool->tail = NULL;
+        //初始化互斥锁
         if (pthread_mutex_init(&(pool->mutex), NULL))
         {
             printf("failed to init mutex!\n");
             break;
         }
+        //初始化条件变量
         if (pthread_cond_init(&(pool->queue_empty), NULL))
         {
             printf("failed to init queue_empty!\n");
@@ -48,6 +52,7 @@ struct threadpool *threadpool_init(int thread_num, int queue_max_num)
             printf("failed to init queue_not_full!\n");
             break;
         }
+        //分配线程的内存空间
         pool->pthreads = (pthread_t *)malloc(sizeof(pthread_t) * thread_num);
         if (NULL == pool->pthreads)
         {
@@ -59,6 +64,7 @@ struct threadpool *threadpool_init(int thread_num, int queue_max_num)
         int i;
         for (i = 0; i < pool->thread_num; ++i)
         {
+            //创建线程，绑定
             pthread_create(&(pool->pthreads[i]), NULL, threadpool_function, (void *)pool);
         }
 
@@ -74,7 +80,7 @@ int threadpool_add_job(struct threadpool *pool, void *(*callback_function)(void 
     assert(callback_function != NULL);
     assert(arg != NULL);
 
-    pthread_mutex_lock(&(pool->mutex));
+    pthread_mutex_lock(&(pool->mutex)); //加锁
     while ((pool->queue_cur_num == pool->queue_max_num) && !(pool->queue_close || pool->pool_close))
     {
         pthread_cond_wait(&(pool->queue_not_full), &(pool->mutex)); //队列满的时候就等待
@@ -85,12 +91,12 @@ int threadpool_add_job(struct threadpool *pool, void *(*callback_function)(void 
         return -1;
     }
     struct job *pjob = (struct job *)malloc(sizeof(struct job));
-    if (NULL == pjob)
+    if (NULL == pjob) //内存创建失败，则退出
     {
         pthread_mutex_unlock(&(pool->mutex));
         return -1;
     }
-    pjob->callback_function = callback_function;
+    pjob->callback_function = callback_function; //设置回调函数
     pjob->arg = arg;
     pjob->next = NULL;
     if (pool->head == NULL)
@@ -100,7 +106,7 @@ int threadpool_add_job(struct threadpool *pool, void *(*callback_function)(void 
     }
     else
     {
-        pool->tail->next = pjob;
+        pool->tail->next = pjob; //如果pool中的任务队列不为空，则直接插入尾部
         pool->tail = pjob;
     }
     pool->queue_cur_num++;
@@ -108,7 +114,7 @@ int threadpool_add_job(struct threadpool *pool, void *(*callback_function)(void 
     return 0;
 }
 
-static uint64_t get_tick_count()
+static uint64_t get_tick_count() //获取时钟时间
 {
     struct timeval tval;
     uint64_t ret_tick;

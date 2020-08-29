@@ -416,8 +416,8 @@ int CDBPool::Init()
 	// 创建固定最小的连接数量
 	for (int i = 0; i < m_db_cur_conn_cnt; i++)
 	{
-		CDBConn *pDBConn = new CDBConn(this);
-		int ret = pDBConn->Init();
+		CDBConn *pDBConn = new CDBConn(this);  //创建CDBConn
+		int ret = pDBConn->Init(); //CDBConn初始化，连接mysql
 		if (ret)
 		{
 			delete pDBConn;

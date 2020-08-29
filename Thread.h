@@ -17,10 +17,13 @@ class CThreadNotify
 public:
     CThreadNotify()
     {
+        //初始化互斥锁，并设置锁的属性为可重复上锁
         pthread_mutexattr_init(&m_mutexattr);
+        //PTHREAD_MUTEX_RECURSIVE:如果一个线程对这种类型的互斥锁重复上锁，不会引起死锁，一个线程对这类互斥锁的多次重复上锁必须由这个线程来重复相同数量的解锁，这样才能解开这个互斥锁，别的线程才能得到这个互斥锁。
         pthread_mutexattr_settype(&m_mutexattr, PTHREAD_MUTEX_RECURSIVE);
         pthread_mutex_init(&m_mutex, &m_mutexattr);
-
+        
+        //初始化条件变量
         pthread_cond_init(&m_cond, NULL);
     }
     ~CThreadNotify()
